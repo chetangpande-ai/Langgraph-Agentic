@@ -1,51 +1,56 @@
-# 📄 LangChain RAG Pipeline with FAISS, HuggingFace & Gemini
+# LangChain Tools
 
-This project demonstrates a **Retrieval-Augmented Generation (RAG)** pipeline using:
 
-- **LangChain** for orchestration  
-- **PyPDFLoader** to read PDF documents  
-- **RecursiveCharacterTextSplitter** to chunk text  
-- **HuggingFace Embeddings** (`all-MiniLM-L6-v2`) for vectorization  
-- **FAISS** as the vector database  
-- **Google Gemini (via LangChain)** as the LLM  
-- **LangChain Hub prompt** for RAG template  
+## Overview
+This repository explores **LangChain Tools**, showcasing how they can be used for building and integrating AI-driven applications. The notebook demonstrates practical examples, code snippets, and workflows to help understand LangChain’s tool ecosystem.
 
----
+```python
+from langchain_community.tools import WikipediaQueryRun
+```
 
-## ⚙️ Features
-- Load and process PDFs into vector embeddings  
-- Store embeddings in FAISS vector store  
-- Retrieve relevant chunks with **MMR (Maximal Marginal Relevance)**  
-- Use Gemini to answer questions based on retrieved context  
-- Clean, optimized pipeline  
+```python
+from langchain_community.utilities import WikipediaAPIWrapper
+```
 
----
+```python
+api_wrapper=WikipediaAPIWrapper(top_k_results=5,doc_content_chars_max= 500)
+```
 
-🧠 How It Works
+```python
+wiki_tool=WikipediaQueryRun(api_wrapper=api_wrapper)
+wiki_tool.name
+wiki_tool.description
+wiki_tool.args
+```
 
-Load PDF → PyPDFLoader reads the file.
+```python
+wiki_tool.run({"query":"elon musk"})
+```
 
-Chunk Text → RecursiveCharacterTextSplitter breaks content into manageable pieces.
+'Page: Elon Musk\nSummary: Elon Reeve Musk ( EE-lon; born June 28, 1971) is an international businessman and entrepreneur known for his leadership of Tesla, SpaceX, X (formerly Twitter), and the Department of Government Efficiency (DOGE). Musk has been the wealthiest person in the world since 2021; as of May 2025, Forbes estimates his net worth to be US$424.7 billion.\nBorn to a wealthy family in Pretoria, South Africa, Musk emigrated in 1989 to Canada; he had obtained Canadian citizenship at birth'
 
-Embeddings → HuggingFaceEmbeddings converts chunks into 384-dim vectors.
+```python
+wiki_tool.run("RCB")
+```
 
-Store in FAISS → vector DB optimized for similarity search.
+```python
+from langchain_community.tools import YouTubeSearchTool
+yt_tool=YouTubeSearchTool()
+yt_tool.name
+yt_tool.description
+yt_tool.args
 
-Retriever → MMR ensures diverse + relevant results.
+```
 
-Prompt + LLM → Inject retrieved context into a RAG prompt, query Gemini, and parse output.
+```python
+yt_tool.run("github copilot")
+```
 
-📌 Example Query
-query = "When is Safety in Pretraining llama model"
-result = rag_chain.invoke(query)
-print(result)
-
-🚀 Future Enhancements
-
-Persist FAISS index to disk (avoid re-embedding every run)
-
-Add support for multiple PDFs
-
-Integrate UI (e.g., Streamlit or Gradio)
-
-Try other LLMs (OpenAI, Claude, Mistral, etc.)
+```python
+from langchain_community.tools.tavily_search import TavilySearchResults
+import os
+TAVILY_API_KEY=os.getenv("TAVILY_API_KEY")
+tavily_tool=TavilySearchResults(tavily_api_key=TAVILY_API_KEY)
+tavily_tool.name
+tavily_tool.run("H1B news")
+```
